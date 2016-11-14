@@ -1,0 +1,19 @@
+;
+; BIND data file for demo.xyz interface
+;
+$TTL	604800
+@	IN	SOA	 sid.demo.xyz. root.demo.xyz. (
+			      2		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+	IN	A	192.168.13.50
+;
+@	IN	NS	sid.demo.xyz.
+
+sid	IN	A	192.168.13.50
+
+www	IN	CNAME	sid
+mail	IN	A	192.168.13.52
+redmine	IN	CNAME	sid
