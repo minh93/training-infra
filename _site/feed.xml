@@ -1,14 +1,578 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-11-18T14:10:20+09:00</updated><id>//</id><title type="html">Your awesome title</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
-</subtitle><entry><title type="html">Welcome to Jekyll!</title><link href="/jekyll/update/2016/11/18/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2016-11-18T14:07:51+09:00</published><updated>2016-11-18T14:07:51+09:00</updated><id>/jekyll/update/2016/11/18/welcome-to-jekyll</id><content type="html" xml:base="/jekyll/update/2016/11/18/welcome-to-jekyll.html">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.3.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2016-11-18T16:50:04+09:00</updated><id>http://localhost:4000//</id><title type="html">Infra note</title><subtitle>This site was creted by p-minh. Inculdes keiken note.
+</subtitle><entry><title type="html">Server provisoning with chef and knife-solo</title><link href="http://localhost:4000/jekyll/update/2016/11/18/server-provisoning-with-chef-and-knife-solo.html" rel="alternate" type="text/html" title="Server provisoning with chef and knife-solo" /><published>2016-11-18T15:00:00+09:00</published><updated>2016-11-18T15:00:00+09:00</updated><id>http://localhost:4000/jekyll/update/2016/11/18/server-provisoning-with-chef-and-knife-solo</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2016/11/18/server-provisoning-with-chef-and-knife-solo.html">&lt;p&gt;In this blog post I will show you how I provision my servers with a handy tool called knife-solo. I will not explain how Chef works, but I will mainly focus on the knife-solo tool.&lt;/p&gt;
 
-&lt;p&gt;To add new posts, simply add a file in the &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory that follows the convention &lt;code class=&quot;highlighter-rouge&quot;&gt;YYYY-MM-DD-name-of-post.ext&lt;/code&gt; and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
+&lt;p&gt;Typically, Chef is set up as master-slave, with a central Chef server and Chef clients, called nodes. The Chef server contains the versioned cookbooks, client information and some other stuff like data bags. The clients are fairly “dumb” and simply contact the Chef server on each run, to check if there is a new cookbook version and report the result of those runs.&lt;/p&gt;
 
-&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
+&lt;p&gt;For a lot of small companies, this master-slave setup is a bit of an overkill. The master server only adds a couple of features that, in my opinion, you don’t really need if you are only managing a couple of servers. Alternatively, Chef has a chef-solo command that does not require a Chef server, but the main disadvantage of this “solo-mode” is that the cookbooks need to be stored locally on the clients (because there’s no Chef server they can connect to). Luckily, knife-solo adds a few additional commands to the knife tool that can help you solve that problem.&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Tom'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints 'Hi, Tom' to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;What knife-solo basically does, is rsync the cookbooks from your workstation to the client over ssh, and executes the chef-solo command with the correct node configuration.&lt;/p&gt;
 
-&lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com/docs/home&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://talk.jekyllrb.com/&quot;&gt;Jekyll Talk&lt;/a&gt;.&lt;/p&gt;</content><summary type="html">You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.</summary></entry></feed>
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: All of the following commands should be executed on your workstation and not on your servers. Also, before you start provisioning production servers, test it on a virtual machine first.&lt;/p&gt;
+
+&lt;h2 id=&quot;installing-knife-solo&quot;&gt;Installing knife-solo&lt;/h2&gt;
+&lt;p&gt;First you will need to install Chef, knife-solo and librarian-chef. We will use Librarian to download and manage community cookbooks. Because these are all based on ruby, the easiest way to install them is using the gem command:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chef&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;librarian&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chef&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Then double check the installation by executing knife solo –help.&lt;/p&gt;
+
+&lt;p&gt;Preparing the Chef kitchen
+Create a folder, and prepare your kitchen:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mkdir&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;example&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;example&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Creating&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kitchen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Creating&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;rb&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kitchen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Creating&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cupboards&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This will leave you with the following folder structure:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;al&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;total&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;340&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;51&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;1734&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;chef&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;    &lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;gitignore&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;329&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Cheffile&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cookbooks&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data_bags&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;environments&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;roles&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;site&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cookbooks&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Some further explanation:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;.chef&lt;/strong&gt; - contains a basic knife.rb configuration file.&lt;br /&gt;
+ &lt;strong&gt;Cheffile&lt;/strong&gt; - the Librarian-Chef configuration file.&lt;br /&gt;
+ &lt;strong&gt;cookbooks&lt;/strong&gt; - directory for all vendor cookbooks that are installed using Berkshelf or Librarian.&lt;br /&gt;
+ &lt;strong&gt;data_bags&lt;/strong&gt; - storage for data bag files&lt;br /&gt;
+ &lt;strong&gt;environments&lt;/strong&gt; - environment configuration (optional).&lt;br /&gt;
+ &lt;strong&gt;nodes&lt;/strong&gt; - node configuration, knife-solo will automatically create files here for each server you provision.&lt;br /&gt;
+ &lt;strong&gt;roles&lt;/strong&gt; - role configuration (optional).&lt;br /&gt;
+ &lt;strong&gt;site-cookbooks&lt;/strong&gt; - directory for all your custom cookbooks.&lt;br /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;preparing-a-server&quot;&gt;Preparing a server&lt;/h2&gt;
+&lt;p&gt;Before you can start provisioning your server, you will need to prepare it by executing the knife solo prepare command from your workstation. This will install Ruby and the latest Chef version on your remote server.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prepare&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@host&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Bootstrapping&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Chef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Installing&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Chef&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Thank&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;you&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;installing&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Chef&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Generating&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'nodes/host.json'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Afterwards, you will see that your nodes directory contains a host.json file with the following content:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;run_list&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Adding a cookbook
+Let’s install nginx on the remote server, using the community cookbook and Librarian. Open your Cheffile and add the nginx cookbook like this:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;site&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'http://community.opscode.com/api/v1'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;cookbook&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'nginx'&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And download the cookbook with all its dependencies with:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;librarian&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chef&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Configuring your node
+Now that we have the cookbook, we need to tell Chef to install nginx on our server by editing the nodes/host.json file. The run_list section contains all roles and/or recipes for this specific node. Here we will add the nginx::package recipe which will install nginx using the default package manager.&lt;/p&gt;
+
+&lt;p&gt;Cookbooks usually have attributes that are used in the recipes for a finer grade of configuration. In our case, the nginx cookbook has several attributes such as the installed version, the number of worker processes, and so on. More information about the available nginx attributes here.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;run_list&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;recipe[nginx::package]&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;nginx&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;    
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1.4.4&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;default_site_enabled&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;worker_processes&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;gzip_comp_level&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Let’s start cooking
+We’re ready to provision our server; the cookbooks are downloaded, the node configuration is in place. Let’s start cooking:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&amp;gt; knife solo cook user@host
+Running Chef on host...
+Checking Chef version...
+Uploading the kitchen...
+Generating solo config...
+Running Chef...&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;That should be it. You now have provisioned a remote server using Chef Solo. But remember, don’t forget to version your infrastructure. You can easily add the entire kitchen to a git repository so that you do have a central versioned storage for your cookbooks and node configuration.&lt;/p&gt;</content><summary type="html">In this blog post I will show you how I provision my servers with a handy tool called knife-solo. I will not explain how Chef works, but I will mainly focus on the knife-solo tool.</summary></entry><entry><title type="html">Chefとknife-soloを使って、リモートサーバ環境を設定</title><link href="http://localhost:4000/jekyll/update/2016/11/18/Chef-%E3%81%A8-knife-solo-%E7%92%B0%E5%A2%83%E8%A8%AD%E5%AE%9A.html" rel="alternate" type="text/html" title="Chefとknife-soloを使って、リモートサーバ環境を設定" /><published>2016-11-18T15:00:00+09:00</published><updated>2016-11-18T15:00:00+09:00</updated><id>http://localhost:4000/jekyll/update/2016/11/18/Chef-%E3%81%A8-knife-solo-%E7%92%B0%E5%A2%83%E8%A8%AD%E5%AE%9A</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2016/11/18/Chef-%E3%81%A8-knife-solo-%E7%92%B0%E5%A2%83%E8%A8%AD%E5%AE%9A.html">&lt;p&gt;この以下、Chefとknife-soloを利用すると、リモートサーバ環境を設定します。&lt;/p&gt;
+
+&lt;p&gt;普段、 Chefはクライアント＜ー＞サーバ構成を使います。Chefのセンターサーバには設定ファイル&lt;code class=&quot;highlighter-rouge&quot;&gt;versioned cookbooks&lt;/code&gt;、クライアント情報…があります。クライアントはかなり “ダム”で、各ランのChefサーバーに連絡して、新しいブックバージョンがあるかどうかを確認し、その実行結果を報告します。&lt;/p&gt;
+
+&lt;p&gt;サーバが少ない場合はセンターサーバが必要がないと思います。設定ファイルは&lt;code class=&quot;highlighter-rouge&quot;&gt;github&lt;/code&gt;のようなソースコードバーションコントロールを使ったのが十分です。幸いなことに、ナイフソロはナイフツールにいくつかのコマンドを追加して、その問題を解決するのに役立ちます。&lt;/p&gt;
+
+&lt;p&gt;knife-soloは基本的に何をしますか？、knife-soloでは&lt;code class=&quot;highlighter-rouge&quot;&gt;rsync&lt;/code&gt;を使って&lt;code class=&quot;highlighter-rouge&quot;&gt;cookbooks&lt;/code&gt;がワークステーションからリモートサーバに同期するし、&lt;code class=&quot;highlighter-rouge&quot;&gt;chef-solo&lt;/code&gt;のコマンドを確かに実行します。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;※&lt;/strong&gt;： 以下のコマンドはワークステーションで実行します。&lt;/p&gt;
+
+&lt;h2 id=&quot;knife-solo&quot;&gt;knife-soloをインストール&lt;/h2&gt;
+&lt;p&gt;初めて&lt;code class=&quot;highlighter-rouge&quot;&gt;Chef&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;knife-solo&lt;/code&gt;と&lt;code class=&quot;highlighter-rouge&quot;&gt;librarian-chef&lt;/code&gt;。&lt;code class=&quot;highlighter-rouge&quot;&gt;cookbooks&lt;/code&gt;をダウンロードと管理するため、&lt;code class=&quot;highlighter-rouge&quot;&gt;Librarian&lt;/code&gt;を利用します。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chef&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;librarian&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chef&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;インストールは正解かどうか、チェックするため&lt;code class=&quot;highlighter-rouge&quot;&gt;knife solo --help&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;Chef kitchenの準備、フォルダーを作成して&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mkdir&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;example&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;example&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Creating&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kitchen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Creating&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;rb&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kitchen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Creating&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cupboards&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;フォルダーの構築：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;al&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;total&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;340&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;51&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;1734&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;chef&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;    &lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;gitignore&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;329&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Cheffile&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cookbooks&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data_bags&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;environments&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nodes&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;roles&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;drwxr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minhpd&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;102&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nov&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;09&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;site&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cookbooks&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;フォルダーの説明&lt;br /&gt;
+ &lt;strong&gt;.chef&lt;/strong&gt; - 基本的に knife.rb と言う設定ファイル。&lt;br /&gt;
+ &lt;strong&gt;Cheffile&lt;/strong&gt; - Librarian-Chef 設定ファイル。&lt;br /&gt;
+ &lt;strong&gt;cookbooks&lt;/strong&gt; - BerkshelfまたはLibrarianを使用してインストールされたすべてのベンダの料理本のディレクトリ。&lt;br /&gt;
+ &lt;strong&gt;data_bags&lt;/strong&gt; - データバッグファイル在庫&lt;br /&gt;
+ &lt;strong&gt;environments&lt;/strong&gt; - 環境設定（オプション）。&lt;br /&gt;
+ &lt;strong&gt;nodes&lt;/strong&gt; - Knife-soloは、あなたが提供するサーバーごとに自動的にファイルを作成します。&lt;br /&gt;
+ &lt;strong&gt;roles&lt;/strong&gt; - 権限（オプション）。&lt;br /&gt;
+ &lt;strong&gt;site-cookbooks&lt;/strong&gt; - すべてのカスタムCookbookのディレクトリ。&lt;br /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;section&quot;&gt;リモートサーバを備える&lt;/h2&gt;
+&lt;p&gt;この以下のコマンドを実行すると&lt;code class=&quot;highlighter-rouge&quot;&gt;Ruby&lt;/code&gt;と最新&lt;code class=&quot;highlighter-rouge&quot;&gt;Chef&lt;/code&gt;をサーバにインストールされます。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;knife&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;solo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prepare&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@host&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Bootstrapping&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Chef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Installing&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Chef&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Thank&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;you&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;installing&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Chef&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Generating&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'nodes/host.json'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;実行する後、ノードのファイルがあります。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;run_list&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;例のため、リモートサーバに&lt;code class=&quot;highlighter-rouge&quot;&gt;Nginx&lt;/code&gt;をインストール
+あなたのChefフィールを開き、次のようにnginxの&lt;code class=&quot;highlighter-rouge&quot;&gt;cookbook&lt;/code&gt;を追加してください：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;site&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'http://community.opscode.com/api/v1'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;cookbook&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'nginx'&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;すべての依存関係を持つ料理本をダウンロードするには：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;librarian&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chef&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;リモートサーバ設定するファイル&lt;/h2&gt;
+&lt;p&gt;実行が終わって&lt;code class=&quot;highlighter-rouge&quot;&gt;cookbook&lt;/code&gt;があります。リモートサーバに&lt;code class=&quot;highlighter-rouge&quot;&gt;Nginx&lt;/code&gt;をインストールため &lt;code class=&quot;highlighter-rouge&quot;&gt;nodes/host.json&lt;/code&gt;ファイルを修正します。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;run_list&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;recipe[nginx::package]&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;nginx&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;    
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1.4.4&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;default_site_enabled&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;worker_processes&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;gzip_comp_level&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;リモートサーバに設定します。&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;user&lt;/code&gt;：ユーザ&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;：リモートサーバのIPアドバイス&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&amp;gt; knife solo cook user@host
+Running Chef on host...
+Checking Chef version...
+Uploading the kitchen...
+Generating solo config...
+Running Chef...&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;エラーがある場合、&lt;code class=&quot;highlighter-rouge&quot;&gt;rsync&lt;/code&gt;ツールまだインストールしていないです。&lt;code class=&quot;highlighter-rouge&quot;&gt;apt-get install rsync&lt;/code&gt;実行します。
+&lt;img src=&quot;http://localhost:4000/assets/posts/2016-11-18-server-provisoning-with-chef-and-knife-solo/err1.png&quot; alt=&quot;My helpful screenshot&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;section-3&quot;&gt;有用なコマンド&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;rsync&lt;/code&gt;リモートホストにファイルアプロードツール。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;rsync&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;avz&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ssh&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;ファイルディレクトリ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;リモートホスト&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;IP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]:[&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;ディレクトリ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><summary type="html">この以下、Chefとknife-soloを利用すると、リモートサーバ環境を設定します。</summary></entry><entry><title type="html">DNS - Postfix - IPtable 設定</title><link href="http://localhost:4000/jekyll/update/2016/11/11/DNS-Postfix-IPtables%E8%A8%AD%E5%AE%9A.html" rel="alternate" type="text/html" title="DNS - Postfix - IPtable 設定" /><published>2016-11-11T15:00:00+09:00</published><updated>2016-11-11T15:00:00+09:00</updated><id>http://localhost:4000/jekyll/update/2016/11/11/DNS-Postfix-IPtables%E8%A8%AD%E5%AE%9A</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2016/11/11/DNS-Postfix-IPtables%E8%A8%AD%E5%AE%9A.html">&lt;h1 id=&quot;section&quot;&gt;目次&lt;/h1&gt;
+&lt;hr /&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#step1&quot;&gt;STEP1: 仮想化&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#step2&quot;&gt;STEP2: DNS/Mail/ネットワーク化&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#step3&quot;&gt;STEP3: アプリケーション&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#step4&quot;&gt;STEP4: 監視&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#step5&quot;&gt;STEP5: OSS と devops とクラウド&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;a-namestep1step1-a&quot;&gt;&lt;a name=&quot;step1&quot;&gt;STEP1: 仮想化&lt;/a&gt;&lt;/h1&gt;
+&lt;h2 id=&quot;section-1&quot;&gt;目的&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Unix系のOSに慣れる&lt;/li&gt;
+  &lt;li&gt;各種ディストリビューションのインストーラーに慣れる&lt;/li&gt;
+  &lt;li&gt;仮想化環境に慣れる&lt;/li&gt;
+  &lt;li&gt;代表的な仮想化Citrix Xenserver 6.5.0 インストールする&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;出来たこと&lt;/h2&gt;
+&lt;p&gt;仮想化&lt;code class=&quot;highlighter-rouge&quot;&gt;Citrix Xenserver 6.5.0&lt;/code&gt; インストールしました。
+仮想機を「追加、削除」出来ました。
+OSインストールしました。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-3&quot;&gt;問題-解決方法&lt;/h2&gt;
+
+&lt;h1 id=&quot;a-namestep2-step2dnsmail-a&quot;&gt;&lt;a name=&quot;step2&quot;&gt; STEP2:DNS/Mail/ネットワーク &lt;/a&gt;&lt;/h1&gt;
+&lt;h2 id=&quot;section-4&quot;&gt;目的&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;DNSサーバ構築、イントラネット内での名前解決の実現&lt;/li&gt;
+  &lt;li&gt;postfixを利用してメールサーバ構築、SMTP等への知識を深める&lt;/li&gt;
+  &lt;li&gt;iptables利用して簡易的なソフトウェアFirewall&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;section-5&quot;&gt;出来たこと&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;DNSサーバ構築ため
+    &lt;ul&gt;
+      &lt;li&gt;bind9を利用しました。
+        &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#debian distribute
+$ sudo apt-get install bind9
+&lt;/code&gt;&lt;/pre&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;reverse zoneとforward zone 設定&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;ディレクトリ /etc/bind9&lt;/p&gt;
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#zone file
+zone &quot;demo.xyz&quot; {
+  type master;
+  file &quot;/etc/bind/forward.demo&quot;;
+};
+zone &quot;13.168.192.in-addr.arpa&quot; {
+  type master;
+  file &quot;/etc/bind/reverse.demo&quot;;
+};
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;forward&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;forward.zone.file:
+;
+; BIND data file for demo.xyz interface
+;
+$TTL    604800
+@       IN      SOA      sid.demo.xyz. root.demo.xyz. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+        IN      A       192.168.13.50
+;
+@       IN      NS      sid.demo.xyz.
+sid     IN      A       192.168.13.50
+www     IN      CNAME   sid
+mail    IN      A       192.168.13.52
+redmine IN      CNAME   sid
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;reverse&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;;
+; BIND reverse data file for 192.168.13. interface
+;
+$TTL    604800
+@       IN      SOA     sid.demo.xyz. root.demo.xyz.(
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+
+;
+@       IN      NS      sid.demo.xyz.
+
+50      IN      PTR     sid.demo.xyz.
+52      IN      PTR     mail.demo.xyz.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;ol&gt;
+  &lt;li&gt;Postfix&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;postfixサビースをインストール&lt;/p&gt;
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ apt-get install postfix
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;postfix設定したファイル　&lt;em&gt;/etc/postfix/main.cf&lt;/em&gt; &lt;a href=&quot;https://github.com/minh93/training-infra/blob/master/postfix/main.cf&quot;&gt;link&lt;/a&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;dovecotとウェブメールSquirrel&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;em&gt;dovecot&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ apt-get install dovecot
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;dovecot設定
+&lt;em&gt;/etc/dovecot/dovecot.conf&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protocols = imap pop3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;/etc/dovecot/conf.d/10-mail.conf&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# メールディレクトリ
+mail_location = mbox:~/mail:INBOX=/var/mail/%u
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Squirrel&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# Apache2 ウェブサーバ
+$ apt-get install apache2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Apache設定&lt;/p&gt;
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ServerAdmin webmaster@demo.xyz #なくてもいい
+ServerName mail.demo.xyz
+DocumentRoot /var/www/mail.demo.xyz/squirrelmail
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;ディレクトリ作成&lt;/p&gt;
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# web mail folder
+$ mkdir /var/www/mail.demo.xyz
+# 相対ディレクトリ
+$ ln -s /usr/share/squirrelmail /var/www/mail.demo.xyz/squirrelmail
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;apacheサービスを再起動
+他の設定ファイル 
+&lt;a href=&quot;&quot;&gt;squirrelとapache&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;iptable
+    &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# インストール
+$ apt-get install iptable-persistence
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+    &lt;p&gt;&lt;em&gt;設定ファイル /etc/iptables/rules.v4[6]&lt;/em&gt;
+&lt;a href=&quot;https://github.com/minh93/training-infra/blob/master/iptables/rules.v4&quot;&gt;設定ファイル&lt;/a&gt;
+&lt;em&gt;デバッグコマンド&lt;/em&gt;&lt;/p&gt;
+    &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ telnet [address] [port]
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;普段のポート&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;サービス&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;ポート&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;ssh&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;22&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;http&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;80~85&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;dns&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;53&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;section-6&quot;&gt;問題-解決方法&lt;/h2&gt;
+&lt;p&gt;コマンド
+ テーストのためこの以下&lt;/p&gt;
+&lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ service bind9 [start/stop/restart]
+$ dig @localhost [domain name]　DNSサーバーに対し問い合わせを行い、その応答結果を表示するコマンドです。
+$ nslookup [domain name] DNSサービスのトラブルシューティングの場合に必ずといってよいほど使われる、非常に基本的なコマンドである。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;a-namestep3-step3--a&quot;&gt;&lt;a name=&quot;step3&quot;&gt; STEP3: アプリケーション &lt;/a&gt;&lt;/h1&gt;
+&lt;h2 id=&quot;section-7&quot;&gt;目的&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;LAMPandR （&lt;code class=&quot;highlighter-rouge&quot;&gt;Linux&lt;/code&gt; / &lt;code class=&quot;highlighter-rouge&quot;&gt;Apache&lt;/code&gt; / &lt;code class=&quot;highlighter-rouge&quot;&gt;MySQL&lt;/code&gt; / &lt;code class=&quot;highlighter-rouge&quot;&gt;PHP&lt;/code&gt;/&lt;code class=&quot;highlighter-rouge&quot;&gt;Ruby&lt;/code&gt;）な環境を構築し、各種ツールについての理解を深める&lt;/li&gt;
+  &lt;li&gt;代表的なアプリケーションサーバーをセットアップしてインターネットへ公開する&lt;/li&gt;
+  &lt;li&gt;Linux の標準的なテキストエディタの使い方を習得する&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;section-8&quot;&gt;出来たこと&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Apacheウェブサーバをインストール&lt;/li&gt;
+  &lt;li&gt;MySQLインストール
+    &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# SQLサーバにログイン
+$ mysql -u[user] -h[host] -p
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;RVMとRubyインストール
+    &lt;ul&gt;
+      &lt;li&gt;インストール
+        &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#RVM インストール
+$ \curl -L https://get.rvm.io | bash -s stable --rails
+# 次は
+$ source ~/.rvm/scripts/rvm
+# RVMの情報チェック
+$ rvm info
+&lt;/code&gt;&lt;/pre&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;RVM&lt;/code&gt;は&lt;code class=&quot;highlighter-rouge&quot;&gt;Ruby&lt;/code&gt;バーションを管理します。
+        &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# 他のルビバーションをインストール
+$ rvm install version_of_ruby
+#　ルビバーションを指定
+$ rvm user version_of_ruby
+&lt;/code&gt;&lt;/pre&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Redmineインストール
+    &lt;ul&gt;
+      &lt;li&gt;ソースコードをダウンロードして&lt;a href=&quot;http://www.redmine.org/projects/redmine/wiki/Download&quot;&gt;こちら&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;前のSQLサーバを使って&lt;/p&gt;
+
+        &lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;#&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;redmine&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;ユーザを作成&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;DATABASE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;redmine&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CHARACTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;utf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;USER&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'redmine'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'localhost'&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDENTIFIED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'[my_password]'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;GRANT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;PRIVILEGES&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;redmine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TO&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'redmine'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'localhost'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;依存関係のインストール&lt;/p&gt;
+
+        &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ gem install bundle
+$ bundle install --without devolopment test
+# システムではrmagickがない場合、エラーが出る。以下のコマンド
+bundle install --without development test rmagick
+&lt;/code&gt;&lt;/pre&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;データベース接続&lt;code class=&quot;highlighter-rouge&quot;&gt;config/database.yml&lt;/code&gt;&lt;/p&gt;
+
+        &lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;ss&quot;&gt;production:
+  adapter: &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mysql&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;database: &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;redmine&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;host: &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;localhost&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;username: &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;redmine&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;password: &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;my_password&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;pumaウェブサーバとNginXリバースプロキシ
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;p&gt;puma&lt;/p&gt;
+
+            &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# redmine ディレクトリで
+# Gemfile 追加して　gem &quot;puma&quot;
+$ bundle install
+&lt;/code&gt;&lt;/pre&gt;
+            &lt;/div&gt;
+            &lt;p&gt;&lt;a href=&quot;&quot;&gt;puma設定ファイル&lt;/a&gt;&lt;/p&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;p&gt;Nginx&lt;/p&gt;
+
+            &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ apt-get install nginx
+&lt;/code&gt;&lt;/pre&gt;
+            &lt;/div&gt;
+            &lt;p&gt;&lt;a href=&quot;https://github.com/minh93/training-infra/blob/master/nginx/conf.d/redmine_demo.conf&quot;&gt;Nginx設定ファイル&lt;/a&gt;&lt;/p&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Redmine database migrate&lt;/p&gt;
+
+        &lt;div class=&quot;language-text highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ RAILS_ENV=production bundle exec rake db:migrate
+&lt;/code&gt;&lt;/pre&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;最後　puma実行する&lt;/p&gt;
+
+        &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;text
+ $ bundle exec puma -e production --config config/puma.rb
+&lt;/code&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;a-namestep4-step4--a&quot;&gt;&lt;a name=&quot;step4&quot;&gt; STEP:4 監視 &lt;/a&gt;&lt;/h1&gt;
+&lt;h2 id=&quot;section-9&quot;&gt;目的&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;OSS&lt;/code&gt; な監視ツールの種類をを把握する&lt;/li&gt;
+  &lt;li&gt;各種サーバーリソースの可視化とサービスの死活チェックの方法について理解を深める&lt;/li&gt;
+  &lt;li&gt;代表的な SNMP をはじめ &lt;code class=&quot;highlighter-rouge&quot;&gt;Nagios&lt;/code&gt; / &lt;code class=&quot;highlighter-rouge&quot;&gt;Zabbix&lt;/code&gt; / &lt;code class=&quot;highlighter-rouge&quot;&gt;Cacti&lt;/code&gt; を構築、設定を行う&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;section-10&quot;&gt;出来たこと&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;top&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;vmstat&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;iostat&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;free&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;netstat&lt;/code&gt;コマンド利用方&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SNMP&lt;/code&gt;概念を取得&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Zabbix&lt;/code&gt;の構築、設定
+    &lt;h2 id=&quot;section-11&quot;&gt;問題〜解決方法&lt;/h2&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;a-namestep5-step5-oss--devops--a&quot;&gt;&lt;a name=&quot;step5&quot;&gt; STEP:5 OSS と devops とクラウド &lt;/a&gt;&lt;/h1&gt;
+&lt;h2 id=&quot;section-12&quot;&gt;目的&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;OSS&lt;/code&gt; な監視ツールの種類をを把握する&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;section-13&quot;&gt;出来たこと&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Git&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;SubVersion&lt;/code&gt;使えました。&lt;/li&gt;
+  &lt;li&gt;chef を使ったサーバー構築とテスト
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;chef&lt;/code&gt; を使って Web サーバーを構築してみた。&lt;/li&gt;
+      &lt;li&gt;構築した Web サーバーに対して &lt;code class=&quot;highlighter-rouge&quot;&gt;serverspec&lt;/code&gt; を使って &lt;code class=&quot;highlighter-rouge&quot;&gt;cookbook&lt;/code&gt;通りに構築出来ているかテストしてみる&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;AWS を触ってみた。
+    &lt;h2 id=&quot;section-14&quot;&gt;問題〜解決方法&lt;/h2&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</content><summary type="html">目次
+
+
+  STEP1: 仮想化
+  STEP2: DNS/Mail/ネットワーク化
+  STEP3: アプリケーション
+  STEP4: 監視
+  STEP5: OSS と devops とクラウド</summary></entry></feed>
