@@ -4,7 +4,7 @@ title:  "Chefとknife-soloを使って、リモートサーバ環境を設定"
 date:   2016-11-18 15:00:00 +0900
 categories: jekyll update
 ---
-この以下、Chefとknife-soloを利用すると、リモートサーバ環境を設定します。
+これから、Chefとknife-soloを利用して、リモートサーバ環境を設定する方法について説明します。
 
 普段、 Chefはクライアント＜ー＞サーバ構成を使います。Chefのセンターサーバには設定ファイル`versioned cookbooks`、クライアント情報…があります。クライアントはかなり "ダム"で、各ランのChefサーバーに連絡して、新しいブックバージョンがあるかどうかを確認し、その実行結果を報告します。
 
@@ -51,14 +51,14 @@ drwxr-xr-x   3 minhpd  root   102 23 nov 09:28 site-cookbooks
 フォルダーの説明<br/>
  **.chef** - 基本的に knife.rb と言う設定ファイル。<br/>
  **Cheffile** - Librarian-Chef 設定ファイル。<br/>
- **cookbooks** - BerkshelfまたはLibrarianを使用してインストールされたすべてのベンダのcook bookのディレクトリ。<br/>
+ **cookbooks** - BerkshelfまたはLibrarianを使用してインストールされたすべてのベンダのcookbooksのディレクトリ。<br/>
  **data_bags** - データバッグファイル在庫<br/>
  **environments** - 環境設定（オプション）。<br/>
  **nodes** - Knife-soloは、あなたが提供するサーバーごとに自動的にファイルを作成します。<br/>
  **roles** - 権限（オプション）。<br/>
  **site-cookbooks** - すべてのカスタムCookbookのディレクトリ。<br/>
-## リモートサーバを備える
- この以下のコマンドを実行すると`Ruby`と最新`Chef`をサーバにインストールされます。
+## リモートサーバを設定する。
+ 以下のコマンドを実行するとRubyと最新Chefがサーバにインストールされます。
 
 {% highlight ruby %}
 > knife solo prepare user@host
@@ -75,7 +75,7 @@ Generating node config 'nodes/host.json'...
     ]
 }
 {% endhighlight %}
-例のため、リモートサーバに`Nginx`をインストール
+例として、リモートサーバに`Nginx`をインストール
 あなたのChefフィールを開き、次のようにnginxの`cookbook`を追加してください：
 {% highlight ruby %}
 site 'http://community.opscode.com/api/v1'
@@ -87,7 +87,7 @@ cookbook 'nginx'
 > librarian-chef install
 {% endhighlight %}
 ## リモートサーバ設定するファイル
-実行が終わって`cookbook`があります。リモートサーバに`Nginx`をインストールため `nodes/host.json`ファイルを修正します。
+設定が終わって`cookbook`があります。リモートサーバに`Nginx`をインストールため `nodes/host.json`ファイルを修正します。
 {% highlight json %}
 {
     "run_list": [
@@ -112,10 +112,10 @@ Uploading the kitchen...
 Generating solo config...
 Running Chef...
 {% endhighlight %}
-エラーがある場合、`rsync`ツールまだインストールしていないです。`apt-get install rsync`実行します。
+エラーがある場合、`rsync`ツールまだインストールされていません。`apt-get install rsync`実行します。
 ![My helpful screenshot](https://github.com/minh93/training-infra/blob/gh-pages/assets/posts/2016-11-18-server-provisoning-with-chef-and-knife-solo/err1.png?raw=true)<br/>
 ## 有用なコマンド
-`rsync`リモートホストにファイルアプロードツール。
+`rsync`リモートホストにファイルをアプロードツール。
 {% highlight ruby %}
 rsync -avz ssh [ファイルディレクトリ] [リモートホストIP]:[ディレクトリ]
 {% endhighlight %}
