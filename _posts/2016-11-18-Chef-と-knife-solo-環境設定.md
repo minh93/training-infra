@@ -51,7 +51,7 @@ drwxr-xr-x   3 minhpd  root   102 23 nov 09:28 site-cookbooks
 フォルダーの説明<br/>
  **.chef** - 基本的に knife.rb と言う設定ファイル。<br/>
  **Cheffile** - Librarian-Chef 設定ファイル。<br/>
- **cookbooks** - BerkshelfまたはLibrarianを使用してインストールされたすべてのベンダの料理本のディレクトリ。<br/>
+ **cookbooks** - BerkshelfまたはLibrarianを使用してインストールされたすべてのベンダのcook bookのディレクトリ。<br/>
  **data_bags** - データバッグファイル在庫<br/>
  **environments** - 環境設定（オプション）。<br/>
  **nodes** - Knife-soloは、あなたが提供するサーバーごとに自動的にファイルを作成します。<br/>
